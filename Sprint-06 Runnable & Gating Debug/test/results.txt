@@ -1,0 +1,86 @@
+<frozen importlib._bootstrap>:491: RuntimeWarning: The global interpreter lock (GIL) has been enabled to load module 'lxml.etree', which has not declared that it can run safely without the GIL. To override this behavior and keep the GIL disabled (at your own risk), run with PYTHON_GIL=0 or -Xgil=0.
+
+======================================================================
+EBAY OFFLINE SILVER MONITOR
+======================================================================
+Watching: C:\Users\Triston Barker\Desktop\EbayMiner\ebay_pages
+Check interval: 2.0 minutes
+======================================================================
+[13:36:13] Starting scan cycle #1...
+  Spot price: $31.50/oz
+  Pawn payout: 80.0%
+  Margin gates: 15.0%-60.0%
+  Time filter: 24.0h
+[13:36:13] Starting scan cycle #1...
+Found: 62 | Eligible: 62 | HITs: 3 | New: 3
+
+=== Morgan_Silver_Dollar_for_sale___eBay.html ===
+Target  | Found | Hit? | Price    | QTY | Time Left              | Title
+----------------------------------------------------------------------------------------------------
+Silver  |    62 | MISS |   $--.-- |   1 | --:--                  | Shop on eBay
+Silver  |    62 | MISS |   $89.25 |   1 | 1m (Today 01:38 PM)    | 1878 7tf Rev 78 Morgan Silver Dollar - Top 100 VAM
+Silver  |    62 | MISS |   $89.25 |   1 | 2m (Today 01:38 PM)    | 1878 7tf Rev 78 Morgan Silver Dollar - Top 100 VAM
+Silver  |    62 | MISS |  $204.24 |   1 | 2m (Today 01:38 PM)    | 1879-O Morgan Silver Dollar - Nice Toning! Opens i
+Silver  |    62 | MISS |   $84.24 |   1 | 2m (Today 01:38 PM)    | 1885-O Morgan Silver Dollar - GEM BU Opens in a ne
+Silver  |    62 | MISS |  $408.75 |   1 | 2m (Today 01:38 PM)    | 1893 Morgan Silver Dollar Opens in a new window or
+Silver  |    62 | MISS |  $344.25 |   1 | 2m (Today 01:38 PM)    | 1893-O Morgan Silver Dollar Opens in a new window
+Silver  |    62 | MISS |  $344.25 |   1 | 2m (Today 01:38 PM)    | 1893-O Morgan Silver Dollar Opens in a new window
+Silver  |    62 | MISS |  $344.25 |   1 | 2m (Today 01:38 PM)    | 1893-O Morgan Silver Dollar Opens in a new window
+Silver  |    62 | MISS |  $344.25 |   1 | 2m (Today 01:38 PM)    | 1895-O Morgan Silver Dollar Opens in a new window
+Silver  |    62 | MISS |  $344.25 |   1 | 2m (Today 01:38 PM)    | 1895-O Morgan Silver Dollar Opens in a new window
+Silver  |    62 | MISS |  $344.25 |   1 | 2m (Today 01:38 PM)    | 1895-O Morgan Silver Dollar Opens in a new window
+Silver  |    62 | MISS |  $344.25 |   1 | 2m (Today 01:38 PM)    | 1895-O Morgan Silver Dollar Opens in a new window
+Silver  |    62 | MISS |   $54.74 |   1 | 3m (Today 01:39 PM)    | Morgan Silver Dollar - Lowball!! Counterstamped Op
+Silver  |    62 | MISS |   $67.00 |   1 | 7m (Today 01:43 PM)    | 1896-o Morgan Opens in a new window or tab
+Silver  |    62 | MISS |   $85.00 |   1 | 8m (Today 01:44 PM)    | 1880-O $1 Morgan Silver Dollar in Choice AU+ Condi
+Silver  |    62 | MISS |   $98.99 |   1 | 8m (Today 01:45 PM)    | 2023 FIJI MORGAN S$1 “1890-CC” NGC MS70 EDC Red Co
+Silver  |    62 | MISS |   $95.00 |   1 | 9m (Today 01:45 PM)    | $1 Dollar Coin 1883 P Mint Opens in a new window o
+Silver  |    62 | MISS |   $55.00 |   1 | 12m (Today 01:48 PM)   | USA Silver Morgan Dollar 1882 P Opens in a new win
+Silver  |    62 | MISS |  $333.00 |   1 | 13m (Today 01:49 PM)   | 1882 CC Morgan Silver Dollar $1 PCGS Genuine UNC D
+Silver  |    62 | MISS |  $485.95 |   1 | 13m (Today 01:49 PM)   | 1878 cc Morgan Dollar CH BU+ starting at ch bu pri
+Silver  |    62 | MISS |   $79.50 |   1 | 14m (Today 01:50 PM)   | 1989 Hi Grade Silver Uncirculated Morgan Dollar Ra
+Silver  |    62 | MISS |   $79.50 |   1 | 15m (Today 01:51 PM)   | 1989 Hi Graded Silver Morgan Dollar in Uncirculate
+Silver  |    62 | MISS |   $60.99 |   1 | 16m (Today 01:52 PM)   | 1881-S MORGAN SILVER DOLLAR / A GORGEOUS ALMOST PE
+Silver  |    62 | MISS |   $98.11 |   1 | 18m (Today 01:54 PM)   | 1883 O $1 Morgan Silver Dollar NGC MS64 Opens in a
+Silver  |    62 | MISS |  $135.00 |   1 | 21m (Today 01:57 PM)   | 1887- S MORGAN DOLLAR PCGS AU 58 Opens in a new wi
+Silver  |    62 | HIT  |  $244.95 |   4 | 21m (Today 01:57 PM)   | Lot of 4 U.S. Morgan Silver Dollars 1885, 1887, 19
+Silver  |    62 | MISS |  $205.09 |   1 | 23m (Today 01:59 PM)   | 1886 Satiny White CHOICE-GEM BU Morgan Silver Doll
+Silver  |    62 | MISS |   $89.87 |   1 | 23m (Today 01:59 PM)   | 1884 Morgan Dollar Uncirculated Silver $1 Coin Ope
+Silver  |    62 | MISS |  $304.99 |   1 | 24m (Today 02:00 PM)   | 1921 D $1 Morgan Silver Dollar - 60 Years In A Pri
+Silver  |    62 | MISS |  $149.99 |   1 | 24m (Today 02:01 PM)   | 1896 P $1 Morgan Silver Dollar - 60 Years In A Pri
+Silver  |    62 | MISS |  $654.99 |   1 | 25m (Today 02:01 PM)   | 1884 O $1 Morgan Silver Dollar - 60 Years In A Pri
+Silver  |    62 | MISS |  $182.50 |   3 | 26m (Today 02:02 PM)   | LOT OF 3 US 90% SILVER DOLLARS 1921 1922 MORGAN PE
+Silver  |    62 | MISS |   $58.00 |   1 | 27m (Today 02:03 PM)   | 1889 O AU MORGAN SILVER DOLLAR #4012 Opens in a ne
+Silver  |    62 | MISS |  $182.50 |   3 | 31m (Today 02:07 PM)   | LOT OF 3 US 90% SILVER DOLLARS 1880 1900 1923 MORG
+Silver  |    62 | MISS |  $149.98 |   1 | 32m (Today 02:08 PM)   | 1878 CC MORGAN silver Dollar NGC MS 70 ER CARSON C
+Silver  |    62 | MISS | $1733.25 |  10 | 34m (Today 02:10 PM)   | Circulated Morgan Silver $1 - 10 Coin Roll - Supre
+Silver  |    62 | MISS |   $76.95 |   1 | 35m (Today 02:11 PM)   | 1884 O Morgan Dollar CH BU + CLEARANCE (r) Opens i
+Silver  |    62 | MISS |  $128.00 |   2 | 35m (Today 02:11 PM)   | Lot Of 2 Morgan Silver Dollars 1921D and 1921S Ope
+Silver  |    62 | HIT  |  $850.00 |  11 | 35m (Today 02:12 PM)   | Lot of 11 Morgan & Peace Silver Dollars. Graded &
+Silver  |    62 | MISS |  $182.50 |   3 | 36m (Today 02:12 PM)   | LOT OF 3 US 90% SILVER DOLLARS 1901 1921 1922 MORG
+Silver  |    62 | MISS |  $173.76 |   1 | 39m (Today 02:15 PM)   | Antique Vintage 1878 P Morgan Silver Dollar Darker
+Silver  |    62 | MISS |   $72.87 |   1 | 39m (Today 02:15 PM)   | USA MORGAN DOLLAR, 1889 Opens in a new window or t
+Silver  |    62 | MISS |  $182.50 |   3 | 41m (Today 02:17 PM)   | LOT OF 3 US 90% SILVER DOLLARS 1881 1883 1922 MORG
+Silver  |    62 | MISS |   $74.87 |   1 | 43m (Today 02:19 PM)   | 1889 Morgan Dollar Approximately BU/MS Silver $1 C
+Silver  |    62 | MISS |   $83.76 |   1 | 47m (Today 02:24 PM)   | Antique Vintage 1886 P Morgan Silver Dollar$ Choic
+Silver  |    62 | MISS |  $157.50 |   1 | 48m (Today 02:24 PM)   | 1921, 1921-S, 1921-D Morgan Silver Dollar Very Nic
+Silver  |    62 | MISS |   $51.00 |   1 | 49m (Today 02:25 PM)   | 1880-O "Micro O" Morgan Silver Dollar Opens in a n
+Silver  |    62 | MISS |  $360.00 |   1 | 49m (Today 02:25 PM)   | 4-1921 -1 oz. Morgan Silver Dollars uncirc-Free Sh
+Silver  |    62 | MISS |  $145.00 |   1 | 50m (Today 02:26 PM)   | 1891-CC Morgan Silver Dollar Opens in a new window
+Silver  |    62 | MISS |   $78.76 |   1 | 50m (Today 02:26 PM)   | Antique Vintage 1887 P Morgan Silver Dollar Choice
+Silver  |    62 | MISS |   $44.76 |   1 | 51m (Today 02:27 PM)   | 1890-Silver Morgan Dollar US Mint Circulated Phila
+Silver  |    62 | HIT  |  $346.00 |   5 | 52m (Today 02:28 PM)   | lot of 5 morgan silver dollar 90% Silver very good
+Silver  |    62 | MISS |   $78.36 |   1 | 53m (Today 02:29 PM)   | 1885 P Morgan Silver Dollar BU UNC MS!!! A Frosty
+Silver  |    62 | MISS |   $61.00 |   1 | 57m (Today 02:33 PM)   | 1903 (P) Morgan Silver Dollar - 90% Silver - XF To
+Silver  |    62 | MISS |   $61.00 |   1 | 57m (Today 02:33 PM)   | 1921 P 90% Silver Morgan Silver Dollar - UNC - 🪙🔥🔥
+
+Silver  |    62 | MISS |   $64.94 |   1 | 57m (Today 02:33 PM)   | 1886 MORGAN SILVER DOLLAR Opens in a new window or
+Silver  |    62 | MISS |   $64.94 |   1 | 57m (Today 02:33 PM)   | 1881-S MORGAN SILVER DOLLAR Opens in a new window
+Silver  |    62 | MISS |   $64.94 |   1 | 57m (Today 02:34 PM)   | 1881-O MORGAN SILVER DOLLAR Opens in a new window
+Silver  |    62 | MISS |   $64.94 |   1 | 58m (Today 02:34 PM)   | 1880-O MORGAN SILVER DOLLAR Opens in a new window
+Silver  |    62 | MISS |  $204.94 |   1 | 58m (Today 02:34 PM)   | 1878 MORGAN SILVER DOLLAR 7 TAIL FEATHERS-REVERSE
+
+EMAIL: sent (3 new) | Subject: --:-- Offline eBay Silver HITS (3 new)
+
+Waiting 120 seconds...
+

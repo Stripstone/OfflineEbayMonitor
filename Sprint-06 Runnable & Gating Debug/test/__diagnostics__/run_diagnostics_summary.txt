@@ -1,0 +1,22 @@
+=== DIAGNOSTICS SUMMARY ===
+Run: 2026-01-06 13:36:13
+
+Total Listings Seen: 62
+  Eligible: 61
+  Ineligible: 0
+
+Classification Results:
+  HIT: 3
+  MISS: 57
+  PROS: 0
+
+Top Rejection Reasons:
+  1. insufficient_margin: 57
+  2. missing_price: 1
+
+Sample Titles (insufficient_margin):
+  - "1878 7tf Rev 78 Morgan Silver Dollar - Top 100 VAM 117 Tripled Star Opens in a new window or tab" (Margin -78.2% < 15.0% threshold)
+  - "1878 7tf Rev 78 Morgan Silver Dollar - Top 100 VAM 117 Tripled Star Opens in a new window or tab" (Margin -78.2% < 15.0% threshold)
+  - "1879-O Morgan Silver Dollar - Nice Toning! Opens in a new window or tab" (Margin -90.5% < 15.0% threshold)
+
+===========================

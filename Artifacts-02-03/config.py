@@ -126,3 +126,14 @@ PRICE_CAPTURE_MAX_MINUTES = 30
 
 
 #EndOfFile
+
+
+# =============================================================================
+# DIAGNOSTICS (Sprint 06.1)
+# =============================================================================
+
+# Enable diagnostic output to ./diagnostics/
+DEBUG_DIAGNOSTICS = True
+
+
+#EndOfFile
