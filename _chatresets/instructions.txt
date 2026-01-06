@@ -1,0 +1,38 @@
+## CHAT A: CONTRACT VAULT
+
+**Initialization Instructions:**
+- Create new chat (or keep existing if clean)
+- Paste prompt below
+- Upload: Contract_Packet_v1.2_CLARIFIED.md
+- Upload: Chat_Coordination_Protocol.md
+
+## CHAT B: PM / DESIGN STUDIO
+
+**Initialization Instructions:**
+- Create NEW chat (fresh context required)
+- Paste prompt below
+- Upload: Contract_Packet_v1.2_CLARIFIED.md
+- Upload: System_Responsibility_Map_v1.4.md
+- Upload: Chat_Coordination_Protocol.md
+- Upload: Sprint history summary (after you create it)
+
+## CHAT C: BUILD STUDIO
+
+**Initialization Instructions:**
+- Create NEW chat (fresh context required)
+- Paste prompt below
+- Upload: Contract_Packet_v1.2_CLARIFIED.md
+- Upload: System_Responsibility_Map_v1.4.md
+- Do NOT upload source files until Sprint Plan provided
+
+CHAT D: VERIFIER
+Initialization Instructions:
+
+Create NEW chat (fresh context required)
+Paste prompt below
+Upload: Contract_Packet_v1.2_CLARIFIED.md
+Upload: System_Responsibility_Map_v1.4.md
+Upload: Chat_Coordination_Protocol.md
+
+
+

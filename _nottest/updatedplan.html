@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>OFFLINE EBAY SILVER MONITOR — PATCH DESIGN SPECIFICATION (Validated)</title>
+  <style>
+    :root { --bg:#0b0c10; --fg:#e8e8ea; --muted:#a9abb3; --card:#141622; --line:#2a2d3a; --accent:#7aa2ff; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji"; background:var(--bg); color:var(--fg); }
+    main { max-width: 980px; margin: 0 auto; padding: 28px 18px 80px; }
+    h1,h2,h3 { line-height:1.2; margin: 22px 0 10px; }
+    h1 { font-size: 1.9rem; }
+    h2 { font-size: 1.35rem; margin-top: 28px; border-top: 1px solid var(--line); padding-top: 18px;}
+    h3 { font-size: 1.1rem; color: var(--accent); }
+    p, li { color: var(--fg); }
+    small, .muted { color: var(--muted); }
+    code, pre { background: #0f1220; border: 1px solid var(--line); border-radius: 10px; }
+    code { padding: 2px 6px; }
+    pre { padding: 12px 12px; overflow:auto; }
+    .card { background: var(--card); border:1px solid var(--line); border-radius: 14px; padding: 14px 14px; margin: 12px 0; }
+    .grid { display:grid; grid-template-columns: 1fr; gap: 12px; }
+    @media (min-width: 900px) { .grid.two { grid-template-columns: 1fr 1fr; } }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid var(--line); padding: 8px 8px; text-align: left; vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; }
+    .ok { color:#7CFFB2; }
+    .warn { color:#FFD27A; }
+    .bad { color:#FF7A7A; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    .pill { display:inline-block; padding: 2px 8px; border-radius: 999px; border:1px solid var(--line); margin-right: 6px; color: var(--muted);}
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>OFFLINE EBAY SILVER MONITOR — PATCH DESIGN SPECIFICATION (Validated)</h1>
+  <p class="muted">
+    Scope: refine parsing, quantity handling, HIT vs PROS classification, and EMA hygiene while preserving the UX & math contracts.
+    This document is intended to prevent “endless patches” by locking interfaces, required fields, routing invariants, and acceptance tests.
+  </p>
+
+  <div class="card">
+    <h2>0. Non-Negotiables (Contract Guardrails)</h2>
+    <ul>
+      <li><b>No UX drift:</b> console table columns & email format are authoritative.</li>
+      <li><b>No math drift:</b> HIT uses melt/dealer floor only; PROS never alters HIT math.</li>
+      <li><b>Isolation:</b> HIT never reads PROS; PROS never writes EMA; EMA never ingests bulk.</li>
+      <li><b>Gates:</b> no email if no new HITs and no new PROS (per the email product rule).</li>
+      <li><b>Robustness:</b> parsers must tolerate missing fields without throwing (default safely, log in diagnostics).</li>
+    </ul>
+  </div>
+
+  <h2>1. System Purpose</h2>
+  <p>
+    This patch ensures that <b>bulk / multi-coin listings</b> are evaluated strictly as <b>melt-based HITs</b> (or MISS),
+    while only <b>true single-coin listings</b> can:
+  </p>
+  <ul>
+    <li>influence EMA signals (EMA eligibility), and</li>
+    <li>be evaluated for PROS (prospect scoring).</li>
+  </ul>
+  <p class="muted">Result: bulk pages won’t contaminate EMA; single-coin opportunities can still surface as PROS.</p>
+
+  <h2>2. End-to-End Pipeline</h2>
+  <ol>
+    <li>Load saved HTML pages from scan folder</li>
+    <li>Parse page metadata (page name / source file) and listing blocks</li>
+    <li>Extract listing primitives (title, price, shipping, time left, URL, seller badges if present)</li>
+    <li>Normalize identity (coin type/year/mint, with conservative defaults)</li>
+    <li>Detect quantity (explicit quantity fields + title heuristics)</li>
+    <li><b>Route:</b> single vs bulk/multi</li>
+    <li>Compute HIT math (melt & dealer floor rules)</li>
+    <li>Check EMA eligibility (single-coin only + hygiene filters)</li>
+    <li>Update EMA (if allowed)</li>
+    <li>Evaluate PROS (single-coin only; scoring only)</li>
+    <li>Apply email gates</li>
+    <li>Render console table</li>
+    <li>Send email (only if gated “on”)</li>
+    <li>State updates (seen_hits / EMA store / diagnostics)</li>
+    <li>Cleanup processed HTML (delete or move per config)</li>
+  </ol>
+
+  <h2>3. Keyword Sets</h2>
+  <div class="grid two">
+    <div class="card">
+      <h3>3.1 Bulk / Quantity Keywords</h3>
+      <p class="muted">If any of these strongly indicate multi-coin, treat as bulk unless explicit quantity=1 overrides.</p>
+      <pre class="mono">lot, lots, roll, estate, collection, mixed, bundle, qty, x, pcs</pre>
+      <p class="muted">Also detect patterns: <code>x2</code>, <code>2x</code>, <code>(2)</code>, <code>2 coin</code>, <code>two coins</code>, <code>roll of 20</code>.</p>
+    </div>
+    <div class="card">
+      <h3>3.2 Damage Keywords</h3>
+      <pre class="mono">holed, cleaned, bent, polished, damaged, scratched</pre>
+      <p class="muted">Damage keywords do <b>not</b> block HIT (still melt-based), but they <b>do</b> block EMA ingestion and PROS eligibility.</p>
+    </div>
+  </div>
+
+  <div class="grid two">
+    <div class="card">
+      <h3>3.3 Replica / Exclusion Keywords</h3>
+      <pre class="mono">replica, copy, plated, token, reproduction</pre>
+      <p class="muted"><b>Hard exclude</b> from all pipelines (HIT/EMA/PROS). Mark as “excluded” in diagnostics.</p>
+    </div>
+    <div class="card">
+      <h3>3.4 Hype Keywords (EMA Exclusion)</h3>
+      <pre class="mono">wow, rare!!!, gem, monster, elite, pcgs</pre>
+      <p class="muted">Hype terms do not block HIT, but block EMA eligibility (anti-contamination).</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>3.5 Grade Signal Keywords</h3>
+    <pre class="mono">g, vg, f, vf, xf, au, ms, ms63, ms64, ms65</pre>
+    <p class="muted">Grade language is used <b>only</b> for PROS scoring (never to inflate HIT math, never to inflate EMA baseline).</p>
+  </div>
+
+  <h2>4. Canonical Math (Locked)</h2>
+  <div class="card">
+    <pre class="mono">melt_value = total_oz * spot_price
+dealer_payout = melt_value * dealer_payout_pct
+
+profit = dealer_payout - total_price
+margin_pct = profit / dealer_payout
+
+recommended_max_total = dealer_payout * (1 - target_margin_pct)
+recommended_max_bid = recommended_max_total - shipping_cost</pre>
+    <p class="muted">
+      Notes:
+      <ul>
+        <li><b>total_price = item_price + shipping_cost</b></li>
+        <li>Clamp <code>recommended_max_bid</code> at &ge; 0.00</li>
+        <li>For safety: if <code>dealer_payout</code> &le; 0, treat margin as 0 and force MISS.</li>
+      </ul>
+    </p>
+  </div>
+
+  <h2>5. Routing Rules (Single vs Bulk)</h2>
+  <div class="card">
+    <table>
+      <thead>
+        <tr><th>Case</th><th>HIT/MISS</th><th>EMA eligibility</th><th>PROS eligibility</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Single coin</b> (quantity==1 and not bulk-indicated)</td>
+          <td class="ok">Yes</td>
+          <td class="ok">Yes, if hygiene passes</td>
+          <td class="ok">Yes, if hygiene passes</td>
+        </tr>
+        <tr>
+          <td><b>Bulk/multi</b> (quantity&gt;1 OR bulk-indicated)</td>
+          <td class="ok">Yes</td>
+          <td class="bad">Never</td>
+          <td class="bad">Never</td>
+        </tr>
+        <tr>
+          <td><b>Replica/excluded</b></td>
+          <td class="bad">Never</td>
+          <td class="bad">Never</td>
+          <td class="bad">Never</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>6. Data Model Contract (Prevents Attribute Errors)</h2>
+  <div class="card">
+    <p><b>Listing</b> objects MUST provide these attributes (set defaults if missing):</p>
+    <ul class="mono">
+      <li>page_name: str</li>
+      <li>title: str</li>
+      <li>url: str</li>
+      <li>item_price: float</li>
+      <li>shipping_cost: float</li>
+      <li>total_price: float (derived)</li>
+      <li>time_left_str: str (human)</li>
+      <li>time_left_seconds: int (for ordering)</li>
+      <li>quantity: int</li>
+      <li>found_pct: float (0..100; default 0.0)</li>
+      <li>identity_key: str (normalized “Type|Year|Mint” or “Unknown”)</li>
+    </ul>
+    <p class="muted">
+      Rule: No module may expect <code>listing.listing</code> or other nested wrappers.
+      If a field is unknown, it must be present with a safe default (not missing).
+    </p>
+  </div>
+
+  <div class="card">
+    <p><b>HitRow</b> (console/email row) MUST include:</p>
+    <ul class="mono">
+      <li>title: str</li>
+      <li>hit_flag: str ("Hit" / "Miss" / "Pros")</li>
+      <li>found_str: str</li>
+      <li>profit_str: str</li>
+      <li>recmax_str: str</li>
+      <li>total_str: str</li>
+      <li>qty_str: str</li>
+      <li>time_left_str: str</li>
+      <li>sort_time_left_seconds: int</li>
+      <li>page_name: str</li>
+      <li>links_str: str (short)</li>
+    </ul>
+  </div>
+
+  <h2>7. Module API Surface (Locked Interfaces)</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Module</th><th>Must Export</th><th>Notes</th></tr></thead>
+      <tbody class="mono">
+        <tr>
+          <td>ebay_search_parser.py</td>
+          <td>parse_search_page(html:str, page_name:str) -&gt; list[Listing]</td>
+          <td>Never delete state; pure parse.</td>
+        </tr>
+        <tr>
+          <td>hit_engine.py</td>
+          <td>evaluate_listings(listings:list[Listing], cfg) -&gt; dict</td>
+          <td>Returns rows + new_hit_ids + diagnostics.</td>
+        </tr>
+        <tr>
+          <td>silver_math.py</td>
+          <td>calc_silver(...)</td>
+          <td>Canonical math only; no grading uplift.</td>
+        </tr>
+        <tr>
+          <td>prospect_score.py</td>
+          <td>score_prospect(listing:Listing, price_store, cfg) -&gt; (score:int, reasons:list[str])</td>
+          <td>Score only; must not write EMA.</td>
+        </tr>
+        <tr>
+          <td>email_format.py</td>
+          <td>build_email_subject(...), build_email_body(...)</td>
+          <td>Must match UX contract email layout.</td>
+        </tr>
+        <tr>
+          <td>emailer.py</td>
+          <td>send_email_if_needed(subject:str, body:str, cfg) -&gt; None</td>
+          <td>Gated sending only.</td>
+        </tr>
+        <tr>
+          <td>state_store.py</td>
+          <td>load_seen_hits(), save_seen_hits(), mark_seen()</td>
+          <td>Seen IDs are stable across runs.</td>
+        </tr>
+        <tr>
+          <td>price_store.py</td>
+          <td>load_price_store(), save_price_store(), get_ema(), update_ema()</td>
+          <td>EMA hygiene enforced before update.</td>
+        </tr>
+        <tr>
+          <td>utils.py</td>
+          <td>safe_float(), clamp(), normalize_whitespace(), now_local_str()</td>
+          <td>Used everywhere to avoid crashes.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>8. EMA Rules (Hygiene)</h2>
+  <div class="card">
+    <ul>
+      <li><b>Single coin only:</b> quantity == 1 and not bulk-indicated.</li>
+      <li><b>Exclude if:</b> any replica/exclusion keyword is present.</li>
+      <li><b>Exclude if:</b> any damage keyword is present.</li>
+      <li><b>Exclude if:</b> hype keyword is present (anti-contamination).</li>
+      <li><b>Exclude if:</b> price missing or cannot be parsed.</li>
+    </ul>
+    <p class="muted">EMA capture is conservative by design; the system’s “upside” is captured via PROS scoring only.</p>
+  </div>
+
+  <h2>9. HIT Rules</h2>
+  <div class="card">
+    <ul>
+      <li>Applies to all non-excluded listings.</li>
+      <li>Melt-based dealer payout floor is the only payout basis for HIT math.</li>
+      <li>Grade language is ignored for HIT.</li>
+      <li>Bulk listings compute <b>total_oz</b> using quantity * oz_per_coin (or heuristics if type known), but still never feed EMA.</li>
+    </ul>
+  </div>
+
+  <h2>10. PROS Rules</h2>
+  <div class="card">
+    <ul>
+      <li>Single coin only (same gating as EMA).</li>
+      <li>Uses EMA (if present) or static defaults as reference only.</li>
+      <li>PROS scoring may be tuned via thresholds/bonuses, but must never inflate EMA or dealer payout math.</li>
+      <li>Output classification is separate from HIT/MISS, and can be routed per PROS_MODE.</li>
+    </ul>
+  </div>
+
+  <h2>11. Email Product Rules (Gated)</h2>
+  <div class="card">
+    <ul>
+      <li>Email only if <b>new HITs</b> or <b>new PROS</b> exist.</li>
+      <li>Rows ordered strictly by <b>time left</b> ascending.</li>
+      <li>Subject line uses earliest time-left among newly included items.</li>
+      <li>Compact email format must remain consistent (no unnecessary indentation or spacing drift).</li>
+    </ul>
+  </div>
+
+  <h2>12. Required Config Constants (Stops “missing attr” errors)</h2>
+  <div class="card">
+    <p class="muted">These must exist in <code class="mono">config.py</code> (values are examples):</p>
+    <pre class="mono"># Scanning
+HTML_FOLDER_PATH = r"C:\path\to\ebay_pages"
+SCAN_SLEEP_SECONDS = 60  # required; used by silver_monitor main loop
+DELETE_PROCESSED_HTML = True
+
+# Market assumptions
+SPOT_PRICE_USD = 62.00
+PAWN_PAYOUT_PCT = 0.82  # dealer/pawn payout floor (HIT math)
+TARGET_MARGIN_PCT = 0.10
+
+# Filters
+NEGATIVE_KEYWORDS = [...]
+REPLICA_KEYWORDS = [...]
+DAMAGE_KEYWORDS = [...]
+HYPE_KEYWORDS = [...]
+BULK_KEYWORDS = [...]
+
+# PROS tuning
+PROS_MODE = "both"  # e.g. "hits_only" | "pros_only" | "both"
+PROS_MAX_TOTAL = 150.00
+PROS_MIN_DEALER_MARGIN_PCT = 10.0
+PROS_MIN_SCORE = 55</pre>
+  </div>
+
+  <h2>13. Diagnostics (You Can Trust the Console)</h2>
+  <div class="card">
+    <p>The system should output a diagnostics JSON each run that includes:</p>
+    <ul class="mono">
+      <li>files_seen, files_processed, files_deleted</li>
+      <li>listings_parsed</li>
+      <li>excluded_count + reasons breakdown</li>
+      <li>bulk_count vs single_count</li>
+      <li>ema_eligible_count vs blocked_count + reasons</li>
+      <li>hits_count, misses_count, pros_count</li>
+    </ul>
+    <p class="muted">If any of these are inconsistent (e.g. Qty always 1, RecMax always 0), the parser contract is broken.</p>
+  </div>
+
+  <h2>14. Acceptance Tests (Stop Patch Drift)</h2>
+  <div class="card">
+    <ol>
+      <li><b>No attribute errors:</b> Listing fields exist; required config constants exist.</li>
+      <li><b>Bulk isolation:</b> A “lot/roll/x2” page produces HIT/MISS rows but <b>EMA updates = 0</b> and <b>PROS = 0</b>.</li>
+      <li><b>Single coin EMA:</b> A clean single coin listing can update EMA once.</li>
+      <li><b>Damage/hype blocks EMA:</b> “cleaned / holed / WOW / GEM / PCGS” blocks EMA update.</li>
+      <li><b>Email gating:</b> no email if no new HIT/PROS; email triggers when new appear; ordered by time left.</li>
+      <li><b>Seen hits stability:</b> second run on same batch should not re-email; should still show console rows as appropriate.</li>
+    </ol>
+  </div>
+
+  <h2>15. Summary (What This Spec Fixes)</h2>
+  <div class="card">
+    <ul>
+      <li>Prevents crashes by locking the Listing/HitRow fields and module exports.</li>
+      <li>Prevents EMA contamination by hard routing bulk away from EMA/PROS.</li>
+      <li>Preserves your existing user-facing email & console contracts.</li>
+      <li>Provides diagnostics + acceptance tests so you can verify health in one run.</li>
+    </ul>
+  </div>
+
+  <p class="muted">Document version: Validated spec rebuild (Dec 18, 2025)</p>
+</main>
+</body>
+</html>

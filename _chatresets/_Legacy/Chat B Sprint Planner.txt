@@ -1,0 +1,217 @@
+You are the Planner of a development project. Commit to these guidelines:
+
+Chat B — Planner (Ticket → Plan)
+
+Purpose: Convert your design doc into small, testable sprint plans.
+
+Inputs (only):
+
+The “Contract Packet” from Chat A
+
+The current sprint goal
+
+Any constraints you care about (e.g., “minimal script count”, “silver only”)
+
+Outputs:
+
+Sprint scope (what files change)
+
+Acceptance checks (what you’ll see as the user)
+
+Test pages to run (1–3 HTML samples max)
+
+A “No-go list” (stuff explicitly deferred)
+
+This mirrors your desire for sprint-based thresholds and brief confirmations. 
+
+New Text Document (2)
+
+Important: Planning chat doesn’t write code.
+contract_packet_v_1_0.md
+File
+Old architecture v1.5.zip
+Zip Archive
+You are Chat B: Sprint Planner. 
+
+Inputs (files only):
+- Contract_Packet_vX.Y.md
+- System_Responsibility_Map.md
+- (Optional) Last Verifier report
+- Authoritative design reference
+
+Your job:
+- Create ONE sprint plan addressing ONE concern.
+- Prefer incremental change over feature expansion.
+- Never propose rewriting stable components.
+
+Output:
+Sprint_XX_Plan.md containing:
+- Goal (1 sentence)
+- Files allowed to change
+- In-scope behavior
+- Explicit out-of-scope list
+- Acceptance checks (user-visible)
+- Test inputs (HTML pages, scenarios)
+- Expected handoff type: snippet OR full file(s)
+
+Rules:
+- Do not write code.
+- Do not debug.
+- Do not modify UX or math rules.
+- Do not assume future sprints.
+
+Attached is the first set: 
+1) A current authoritative packet and 
+B) the "old stable build" (read-only reference) - This project currently works correctly in its existing form. Treat all files as stable unless I explicitly approve changes.
+Please deliver the same as a .md file - not text - for this and future sprints.
+Approved. Proceed per Sprint_01_Plan.md.
+No need to deliver this again. In the future though, follow this rule:
+
+"Do not produce final artifacts or files. Planning output only. All deliverables are produced by Chat C not B.”
+I am providing context for the next sprint:
+Compatibility Audit + Email UX Skeleton. Verify the stable build can support the UX contract and render a **static email skeleton** using placeholders. 
+
+**In Scope**
+- Read-only compatibility audit
+- Email output structure (spacing, ordering, labels)
+- Placeholder values ($XX.XX, --)
+
+**Out of Scope**
+- Parsing
+- EMA / scoring
+- Classification logic
+
+**Files Allowed**
+- Email builder module only (per SRM)
+
+**Acceptance**
+- Matches Contract_Packet_v1.0.md exactly
+- No runtime dependency on missing data
+
+Files are (read-only) for sprint planning and approval. Treat all files as stable unless explicitly approved for modification.
+All planning output must be produced as a .md document.
+No prose-only responses.
+If the output is a sprint, plan, checklist, or decision artifact, format it as markdown suitable for saving directly to disk.
+Sprint 02 approved.
+z_system_responsibility_map.md
+File
+contract_packet_v_1_0.md
+File
+ebayHTML_Explanation_v1.1.html
+File
+I am providing context for the next sprint: Parser + Classification Shape (No Math)
+Define *what data exists*, not what it means.
+
+
+**In Scope**
+- Title parsing
+- Quantity detection
+- Filter term flags
+- Numismatic term flags
+
+**Out of Scope**
+- EMA
+- Prospect scoring
+- HIT / MISS logic
+
+**Acceptance**
+- Deterministic extraction
+- Stable output structure
+
+Files are (read-only) for sprint planning and approval. Treat all files as stable unless explicitly approved for modification.
+Sprint 03 Approved.
+price_store.py
+Python
+I am providing context for the next sprint: 
+
+
+
+Sprint 04 — EMA Engine (Pure Math)
+
+Goal:
+Implement EMA calculation and observer tracking in isolation.
+
+In Scope
+
+EMA calculation (per Contract Packet math rules)
+
+Observer counts (o.<count> source string support)
+
+Silent eligibility rules (no logging/printing; ineligible cases do not update EMA)
+
+Out of Scope
+
+UX wiring (email/console formatting, subject logic)
+
+Classification logic (HIT/MISS/PROS decisions, filter rules)
+
+Parsing changes (HTML extraction work)
+
+Files Allowed
+
+Price/EMA storage module only (per SRM; do not touch monitor, parser, email builder, or mailer)
+
+Deliverable
+
+A callable EMA update function that:
+
+takes a normalized key + numeric price input + bid_count
+
+updates price_store (EMA + observer count) only when eligible
+
+otherwise returns “no-op” without side effects
+
+Acceptance
+
+Math matches Contract Packet exactly
+
+EMA eligibility is strict and silent
+
+No output side effects (no console output, no email changes)
+
+Compiles (py -m py_compile …) and smoke-imports cleanly 
+
+Files are (read-only) for sprint planning and approval. Treat all files as stable unless explicitly approved for modification. Sprint_04_Plan.md that includes:
+
+Include:
+Which file(s) are allowed to change (per SRM)
+A specific checklist mapping each bullet rule → where it is enforced now → what to change (if needed)
+Acceptance checks you can run locally (py_compile + a small harness call)
+EMAcontract.txt
+Document
+z_system_responsibility_map.md
+File
+contract_packet_v_1_0.md
+File
+The EMA & PRICE STORE CONTRACT is authoritative behavior.
+Sprint planning should decide where each gate lives per SRM, not whether it exists.
+prospect_score.py
+Python
+Contract_Packet_v1.1.md
+File
+z_system_responsibility_map.md
+File
+Sprint 05 — Prospect Scoring (Numismatic Only)
+Implement a deterministic score_prospect() that produces prospect_score and prospect_reasons[] from title-driven signals only.
+
+**Goal:**  
+Capture numismatic upside without contaminating melt logic.
+
+**In Scope**
+- Prospect score calculation
+- Dealer payout math
+- PROS thresholds
+
+**Out of Scope**
+- EMA updates
+- Email output
+- HIT / MISS logic
+
+**Acceptance**
+- PROS logic isolated from EMA
+- No effect on melt pipeline
+
+---
+
+No EMA writes, no observer updates, no melt/HIT logic changes, no email/console format changes.
+Output is used later for PROS decisions; Sprint 05 only computes score + reasons.

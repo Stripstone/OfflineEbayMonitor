@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Offline eBay HTML Parsing Contract (Reference)</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.5;
+      max-width: 900px;
+      margin: 40px auto;
+      color: #222;
+    }
+    h1, h2, h3 {
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 4px;
+    }
+    code, pre {
+      background: #f5f5f5;
+      padding: 6px 8px;
+      display: block;
+      white-space: pre-wrap;
+      border-left: 4px solid #ccc;
+    }
+    .note {
+      background: #fff7d6;
+      border-left: 4px solid #f0c000;
+      padding: 10px;
+      margin: 16px 0;
+    }
+    .warning {
+      background: #ffe3e3;
+      border-left: 4px solid #cc0000;
+      padding: 10px;
+      margin: 16px 0;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Offline eBay HTML Parsing Contract</h1>
+
+<p><strong>Change Log (v1.0 → v1.1):</strong></p>
+<ul>
+  <li>Updated listing container identification to match <code>li</code> elements whose class includes <code>s-card</code> (not an exact class string), reflecting additional classes and stable listing attributes.</li>
+  <li>Corrected title extraction structure: title is presented in an element with class <code>s-card__title</code> (commonly a <code>div</code> with heading semantics), not strictly an <code>h3</code>.</li>
+  <li>Corrected shipping/delivery presentation: delivery cost appears as inline attribute-row text (e.g., <code>+$X.XX delivery</code>), not as <code>span.s-card__shipping</code>.</li>
+  <li>Corrected bid count presentation: bid count appears as inline attribute-row text (e.g., <code>14 bids</code>) within styled text spans, not as <code>span.s-item__bids</code> for these pages.</li>
+</ul>
+<hr />
+
+<p>
+This document defines the <strong>minimum HTML structures that must be supported</strong>
+to correctly process offline-saved eBay search result pages for the
+<strong>Offline eBay Silver Monitor</strong>.
+</p>
+
+<div class="note">
+<strong>Scope:</strong> These rules apply to offline HTML only.  
+Each listing card is independent. No assumptions may be made at the page level.
+</div>
+
+<hr />
+
+<h2>1. Listing Container (One Listing = One Card)</h2>
+<pre>
+&lt;li class=&quot;s-card ...&quot; id=&quot;item...&quot; data-listingid=&quot;...&quot;&gt;
+</pre>
+or legacy:
+<pre>
+&lt;li class=&quot;s-item&quot;&gt;
+</pre>
+
+<p>
+Each container represents exactly one listing. All parsing, pricing,
+and deduplication is performed per container.
+</p>
+<hr />
+
+<h2>2. Listing Title (Primary Identity Source)</h2>
+<pre>
+&lt;div role=&quot;heading&quot; aria-level=&quot;3&quot; class=&quot;s-card__title&quot;&gt;
+  &lt;span&gt;1875 Seated Liberty 25c Quarter Dollar Silver Coin&lt;/span&gt;
+&lt;/div&gt;
+</pre>
+or legacy:
+<pre>
+&lt;h3 class=&quot;s-item__title&quot;&gt;
+</pre>
+
+<p>
+The title is the <strong>single source of truth</strong> for:
+</p>
+<ul>
+  <li>Coin type detection</li>
+  <li>Year extraction</li>
+  <li>Mint detection</li>
+  <li>Numismatic eligibility</li>
+  <li>Quantity inference</li>
+</ul>
+<hr />
+
+<h2>3. Item Price (Item-Only)</h2>
+<pre>
+&lt;span class="s-card__price"&gt;$24.99&lt;/span&gt;
+</pre>
+
+<p>
+This value represents the <strong>item price only</strong>.  
+Shipping must be added separately to compute the total cost.
+</p>
+
+<hr />
+
+<h2>4. Shipping / Delivery Cost</h2>
+Delivery/shipping is presented as inline attribute text, for example:
+<pre>
+&lt;span class=&quot;su-styled-text secondary large&quot;&gt;+$4.65 delivery&lt;/span&gt;
+</pre>
+
+Free delivery may also appear as text:
+<pre>
+&lt;span class=&quot;su-styled-text secondary large&quot;&gt;Free delivery&lt;/span&gt;
+</pre>
+
+<p>
+For these offline listing pages, shipping/delivery may not appear in a dedicated <code>s-card__shipping</code> node.
+Delivery/shipping cost must be extracted from the attribute-row text (e.g., strings containing <code>delivery</code> or <code>shipping</code>).
+</p>
+<hr />
+
+<h2>5. Time Left & End Time</h2>
+<pre>
+&lt;span class="s-card__time-left"&gt;12m left&lt;/span&gt;
+&lt;span class="s-card__time-end"&gt;(Today 8:42 PM)&lt;/span&gt;
+</pre>
+
+or legacy:
+<pre>
+&lt;span class="s-item__time-left"&gt;1h 12m left&lt;/span&gt;
+</pre>
+
+<p>
+Used for:
+</p>
+<ul>
+  <li>Filtering by max time remaining</li>
+  <li>Sorting HITs by urgency</li>
+  <li>Email subject (earliest end time)</li>
+</ul>
+
+<hr />
+
+<h2>6. Canonical Listing URL (Deduplication Key)</h2>
+<pre>
+&lt;a class="s-card__link"
+   href="https://www.ebay.com/itm/277561839144"&gt;
+</pre>
+
+<p>
+The invariant is:
+</p>
+<pre>
+/itm/&lt;ITEM_ID&gt;
+</pre>
+
+<p>
+This ID is the primary key for:
+</p>
+<ul>
+  <li>seen_hits.json</li>
+  <li>Email deduplication</li>
+  <li>State persistence across runs</li>
+</ul>
+
+<hr />
+
+<h2>7. Bid Count (EMA Eligibility Gate)</h2>
+Embedded attribute text:
+<pre>
+&lt;span class=&quot;su-styled-text secondary large&quot;&gt;14 bids&lt;/span&gt;
+</pre>
+
+<p>
+Rules:
+</p>
+<ul>
+  <li>Bid count &ge; 1 → EMA capture allowed</li>
+  <li>No bids → no EMA update</li>
+  <li>Prevents thin or inactive listings from polluting price_store</li>
+</ul>
+<hr />
+
+<h2>8. What Must NOT Be Relied On</h2>
+<div class="warning">
+<ul>
+  <li>Page-level denomination headers</li>
+  <li>Assuming all listings are the same coin</li>
+  <li>Sold prices embedded in the page</li>
+  <li>Card ordering or layout consistency</li>
+</ul>
+</div>
+
+<p>
+Every listing card must be parsed independently and defensively.
+</p>
+
+<hr />
+
+<h2>Summary (Engineer Cheat Sheet)</h2>
+<ul>
+  <li><code>li.s-card / li.s-item</code> → one listing</li>
+  <li><code>.s-card__title</code> → identity + numismatics</li>
+  <li><code>.s-card__price</code> → item price</li>
+  <li>Shipping may be inline text → regex required</li>
+  <li><code>.s-card__time-left</code> → urgency + filtering</li>
+  <li><code>/itm/&lt;id&gt;</code> → dedupe key</li>
+  <li><code>X bids</code> → EMA gate</li>
+</ul>
+
+<p>
+If these elements are handled correctly, the entire system functions as specified.
+</p>
+
+</body>
+</html>

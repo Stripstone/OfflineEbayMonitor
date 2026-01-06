@@ -1,0 +1,124 @@
+Chat D — Verifier
+Sprint 04 · EMA Engine (Pure Math)
+
+Inputs verified
+
+Sprint plan: Sprint_04_Plan.md 
+
+Sprint_04_Plan
+
+Module boundaries: System Responsibility Map (SRM) 
+
+z_system_responsibility_map
+
+Authority (EMA semantics): Contract_Packet_v1.1 
+
+Contract_Packet_v1.1
+
+Code under test: price_store.py 
+
+price_store
+
+PASS / FAIL checklist
+1) Compile & import safety
+
+py -m py_compile price_store.py → PASS (expected)
+
+Smoke import (import price_store) → PASS
+
+No unexpected kwargs / missing imports → PASS
+
+2) Scope compliance (SRM)
+
+Only price_store.py touched → PASS
+
+No UX output, logging, or printing → PASS
+
+Pure math + storage only → PASS
+
+3) Callable EMA API (Sprint 04)
+
+Callable update function exists and returns True only on mutation → PASS
+
+Silent no-op on ineligible inputs → PASS
+
+Observer totals accumulated → PASS
+
+4) EMA eligibility vs Contract_Packet_v1.1
+
+STRICT eligibility fully enforced here → FAIL
+
+Contract_Packet_v1.1 requires all EMA eligibility rules to be enforced silently at capture time, including:
+
+qty == 1
+
+NOT lot / roll / set / face value
+
+NOT album / folder / book / “NO COINS”
+
+NOT accessory (jewelry, pendant, etc.)
+
+NOT damaged (holed, drilled, etc.)
+
+bids ≥ 1
+
+Current implementation enforces only:
+
+truthy key
+
+total_price > 0
+
+bid gate (when enabled)
+
+The remaining eligibility constraints are not enforced in this module, which makes EMA capture too permissive relative to Contract_Packet_v1.1.
+
+Result: FAIL ❌
+
+This is a hard sprint-gate failure because EMA eligibility semantics are part of the Contract Packet v1.1 and must be enforced strictly and silently at write-time.
+
+Minimal, actionable defect list
+
+Missing EMA eligibility gates
+
+qty == 1 not enforced
+
+Disallowed categories (lot/roll/set/face, album/book, accessories, damaged) not gated
+
+Impact: EMA polluted by ineligible listings
+
+Fix type: Full file (eligibility logic touches public API behavior)
+
+Eligibility responsibility ambiguity
+
+Current code assumes upstream classifier filtered eligibility
+
+Contract v1.1 explicitly assigns EMA eligibility semantics to the price store
+
+Fix type: Full file (clarify and enforce locally)
+
+Observer semantics potentially correct but contingent
+
+OBSERVERS_TOTAL += bid_count is correct only if ineligible listings never reach this module
+
+Once eligibility is enforced here, observer semantics will be compliant
+
+Fix type: Included in same full file change
+
+Required fix classification
+
+Handoff type: Full file (price_store.py)
+
+Rationale:
+
+Fix touches eligibility rules at capture time
+
+Affects public callable behavior
+
+More than a single contiguous edit
+
+Summary
+
+Your EMA math, storage schema, rounding, observer accumulation, and silence guarantees are solid.
+The only blocker is that Contract_Packet_v1.1 EMA eligibility is not fully enforced at write-time.
+
+Once eligibility gates are added (without UX/log side effects), Sprint 04 will pass cleanly.
