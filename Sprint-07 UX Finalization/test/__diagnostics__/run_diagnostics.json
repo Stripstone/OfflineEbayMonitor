@@ -1,0 +1,11 @@
+{
+  "total_listings_seen": 0,
+  "eligible_count": 0,
+  "hit_count": 0,
+  "miss_count": 0,
+  "ineligible_count": 0,
+  "pros_count": 0,
+  "rejection_buckets": {},
+  "samples_by_reason": {},
+  "timestamp": "2026-01-07 10:46:21"
+}

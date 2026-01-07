@@ -1,0 +1,16 @@
+=== DIAGNOSTICS SUMMARY ===
+Run: 2026-01-07 10:46:21
+
+Total Listings Seen: 0
+  Eligible: 0
+  Ineligible: 0
+
+Classification Results:
+  HIT: 0
+  MISS: 0
+  PROS: 0
+
+Top Rejection Reasons:
+  (none)
+
+===========================

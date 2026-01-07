@@ -34,7 +34,7 @@ SEEN_HITS_PATH = os.path.join(os.path.dirname(__file__), "seen_hits.json")
 # CORE MARKET CONFIG
 # =============================================================================
 
-SPOT_PRICE = 80.00  # USD per oz (manually updated)
+SPOT_PRICE = 180.00  # USD per oz (manually updated)
 
 # Pawn payout percent of melt value (guaranteed melt exit reference)
 PAWN_PAYOUT_PCT = 90.0
@@ -89,7 +89,7 @@ DELETE_PROCESSED_HTML = True
 # MONITOR LOOP TIMING
 # =============================================================================
 
-DEFAULT_CHECK_INTERVAL_MIN = 2.0  # Minutes between scan cycles
+DEFAULT_CHECK_INTERVAL_MIN = 0.1  # Minutes between scan cycles
 SLEEP_JITTER_SEC = 5.0  # Random jitter to avoid patterns
 
 

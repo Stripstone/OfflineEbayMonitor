@@ -1,0 +1,102 @@
+SPRINT 07 IMPLEMENTATION NOTES
+
+Files Modified:
+1. email_builder.py (complete rewrite)
+2. silver_monitor.py (email integration update)
+
+=============================================================================
+email_builder.py
+=============================================================================
+
+COMPLETE REWRITE per Contract v1.3.1 Section 2
+
+New Functions:
+- construct_ebay_listing_url(item_id) → eBay item page URL
+- construct_ebay_sales_url(title) → eBay sold listings search URL (extracts series/year/mint)
+- construct_coinbook_url() → Placeholder for Sprint 08
+- extract_earliest_time(hits) → Extract earliest time for subject line (h:mm AM/PM format)
+- format_header_section() → Email header (spot, pawn, margins, time filter)
+- format_melt_entry(entry_num, evaluated) → Complete melt entry format (40-dash dividers)
+- format_pros_entry(entry_num, evaluated) → PROS entry format with placeholders
+- build_email_subject(hits) → Subject line: "[time] Offline eBay Silver HITS ([count] new)"
+- build_email_body(hits) → Complete email body with header, entries, footer
+
+Entry Format Implementation:
+- Melt entries: Full multi-line breakdown per Contract Section 2
+  * Current Total (item + ship breakdown)
+  * Current Profit (pawn) with margin %
+  * RecMaxBid with profit/margin at max
+  * Silver content (Qty, oz/coin, Total oz)
+  * Melt and Pawn payout
+  * Time left with absolute time
+  * Links: eBay listing + eBay sales
+  
+- PROS entries: Same structure with placeholders
+  * Numismatic override: "N/A"
+  * Est. dealer payout: "--"
+  * FMV floor: "--"
+  * Source: "--"
+  * CoinBook link: "[Placeholder - CoinBook]"
+  * All melt fields populated normally
+
+Link Construction:
+- eBay Listing: https://www.ebay.com/itm/{item_id}
+- eBay Sales: https://www.ebay.com/sch/i.html?_nkw={series}+{year}+{mint}&LH_Sold=1&LH_Complete=1
+  * Best-effort extraction of series, year, mint from title
+  * Fallback to generic title search if extraction fails
+- CoinBook: Placeholder "[Placeholder - CoinBook]" (Sprint 08 will implement)
+
+Entry Rules:
+- Sorting: By earliest end_time_ts (ascending)
+- Numbering: Sequential from #1
+- Dividers: 40 dashes before and after each entry
+- Title: Full text, no truncation
+
+=============================================================================
+silver_monitor.py
+=============================================================================
+
+Changes:
+1. Email integration updated:
+   - Replaced build_email_body_simple() with email_builder.build_email_body()
+   - Replaced manual subject construction with email_builder.build_email_subject()
+   - Import email_builder in email sending block
+
+2. Obsolete functions marked (not removed for reference):
+   - build_email_body_simple() → raises NotImplementedError
+   - get_earliest_time_str() → raises NotImplementedError
+   - Both marked as "OBSOLETE (Sprint 07)"
+
+3. Console output verified (no changes needed):
+   - Counts line: "Found: X | Eligible: Y | HITs: Z | New: W" ✓
+   - Table format: "Target | Found | Hit? | Price | QTY | Time Left | Title" ✓
+   - Target column: "Silver" (static) ✓
+
+=============================================================================
+VERIFICATION CHECKLIST
+=============================================================================
+
+Email Format (Contract v1.3.1 Section 2):
+✓ Subject line: [time] Offline eBay Silver HITS ([count] new)
+✓ Header section: Spot, pawn, margins, time filter, total HITs
+✓ Melt entry: 40-dash dividers, all fields populated
+✓ PROS entry: Same format with placeholders
+✓ Footer: Generated timestamp
+✓ Entry sorting: Earliest time first
+✓ Entry numbering: Sequential #1, #2, #3...
+✓ Links: eBay listing, eBay sales, CoinBook placeholder
+
+Console Format (Contract v1.3.1 Section 1):
+✓ Counts line format matches Clarification #1
+✓ Table columns match Section 1
+✓ Target column = "Silver" per Clarification #2
+
+Out of Scope (Verified NOT Changed):
+✓ Classification logic unchanged
+✓ Filter gates unchanged
+✓ PROS classification remains False
+✓ Diagnostic output unchanged
+
+=============================================================================
+END OF IMPLEMENTATION NOTES
+=============================================================================
