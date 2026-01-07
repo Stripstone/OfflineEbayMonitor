@@ -93,6 +93,29 @@ def _track_rejection(reason: str, title: str, reason_detail: str):
         })
 
 
+def _check_blocked_terms(title: str) -> tuple[bool, str]:
+    """
+    Check if title contains blocked terms.
+    
+    Returns:
+        (is_blocked, reason_detail)
+    
+    Sprint 06: Filter gate
+    """
+    import config
+    
+    if not title:
+        return False, ""
+    
+    title_lower = title.lower()
+    
+    for term in config.BLOCKED_TERMS:
+        if term.lower() in title_lower:
+            return True, f"Contains blocked term: {term}"
+    
+    return False, ""
+
+
 # =============================================================================
 # CLASSIFICATION
 # =============================================================================
@@ -141,6 +164,37 @@ def classify_listings(listings: List[Any], diagnostics_enabled: bool = False) ->
         _diagnostics["eligible_count"] += len(listings)
     
     for listing in listings:
+        title = getattr(listing, "title", "Unknown")
+        
+        # Sprint 06: Filter gates (INELIGIBLE checks)
+        if diagnostics_enabled:
+            # Check blocked terms
+            is_blocked, block_reason = _check_blocked_terms(title)
+            if is_blocked:
+                _diagnostics["ineligible_count"] += 1
+                _track_rejection("blocked_terms", title, block_reason)
+                continue
+            
+            # Check missing data
+            total_price = getattr(listing, "total_price", None)
+            time_left = getattr(listing, "time_left", None)
+            qty = getattr(listing, "qty", 1)
+            
+            if total_price is None or total_price <= 0:
+                _diagnostics["ineligible_count"] += 1
+                _track_rejection("missing_price", title, "No valid total_price")
+                continue
+            
+            if time_left is None:
+                _diagnostics["ineligible_count"] += 1
+                _track_rejection("missing_time", title, "No time_left data")
+                continue
+            
+            if qty < 1:
+                _diagnostics["ineligible_count"] += 1
+                _track_rejection("invalid_qty", title, f"Invalid quantity: {qty}")
+                continue
+        
         # Get melt calculations
         silver_calc = silver_math.calc_silver(listing)
         

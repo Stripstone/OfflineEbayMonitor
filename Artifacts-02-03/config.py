@@ -136,4 +136,23 @@ PRICE_CAPTURE_MAX_MINUTES = 30
 DEBUG_DIAGNOSTICS = True
 
 
+# =============================================================================
+# FILTER TERMS (Sprint 06)
+# =============================================================================
+
+# Blocked terms - listings with these are INELIGIBLE
+BLOCKED_TERMS = [
+    "lot",
+    "roll",
+    "set",
+    "face value",
+    "damaged",
+    "money clip",
+    "keychain",
+    "pendant",
+    "jewelry",
+    "necklace",
+]
+
+
 #EndOfFile
