@@ -255,30 +255,31 @@ This file:
 
 ---
 
-## Sprint 06.x Ladder Execution
+            ## Sprint 06.x Ladder Execution
 
-## Sprint 06.1 — Melt HIT / MISS Only
+            ## Sprint 06.1 — Melt HIT / MISS Only
 
-**Goal:**  
-Validate core melt economics produce visible HITs on real data.
+            **Goal:**  
+            Validate core melt economics produce visible HITs on real data.
+            - **Status:** ✅ Complete
 
-**In Scope**
-- QTY-aware melt calculation
-- Pawn payout calculation
-- Melt HIT gate (margin vs pawn, cost-basis)
-- MISS fallback when Melt HIT fails
+            **In Scope**
+            - QTY-aware melt calculation
+            - Pawn payout calculation
+            - Melt HIT gate (margin vs pawn, cost-basis)
+            - MISS fallback when Melt HIT fails
 
-**Out of Scope**
-- Filter words
-- PROS logic
-- Numismatic scoring
+            **Out of Scope**
+            - Filter words
+            - PROS logic
+            - Numismatic scoring
 
-**Acceptance**
-- Eligible listings > 0 on known-good pages
-- HIT count > 0 on melt-favorable pages
-- Diagnostics clearly show why listings MISS
+            **Acceptance**
+            - Eligible listings > 0 on known-good pages
+            - HIT count > 0 on melt-favorable pages
+            - Diagnostics clearly show why listings MISS
 
----
+            ---
 
 ## Sprint 06.2 — Add Hard Filter Gates
 
