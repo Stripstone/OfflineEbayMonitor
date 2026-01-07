@@ -1,13 +1,13 @@
 {
   "total_listings_seen": 62,
   "eligible_count": 61,
-  "hit_count": 3,
-  "miss_count": 57,
+  "hit_count": 2,
+  "miss_count": 58,
   "ineligible_count": 0,
   "pros_count": 0,
   "rejection_buckets": {
     "missing_price": 1,
-    "insufficient_margin": 57
+    "insufficient_margin": 58
   },
   "samples_by_reason": {
     "missing_price": [
@@ -18,18 +18,18 @@
     ],
     "insufficient_margin": [
       {
-        "title": "1878 7tf Rev 78 Morgan Silver Dollar - Top 100 VAM 117 Tripled Star Opens in a new window or tab",
-        "reason_detail": "Margin -78.2% < 15.0% threshold"
+        "title": "elf Morgan Dollar 1898 A11 Opens in a new window or tab",
+        "reason_detail": "Margin -84.4% < 15.0% threshold"
       },
       {
-        "title": "1878 7tf Rev 78 Morgan Silver Dollar - Top 100 VAM 117 Tripled Star Opens in a new window or tab",
-        "reason_detail": "Margin -78.2% < 15.0% threshold"
+        "title": "elf Morgan Dollar 1884 O O/O f47 Opens in a new window or tab",
+        "reason_detail": "Margin -79.4% < 15.0% threshold"
       },
       {
-        "title": "1879-O Morgan Silver Dollar - Nice Toning! Opens in a new window or tab",
-        "reason_detail": "Margin -90.5% < 15.0% threshold"
+        "title": "elf Morgan Dollar 1889 Opens in a new window or tab",
+        "reason_detail": "Margin -81.4% < 15.0% threshold"
       }
     ]
   },
-  "timestamp": "2026-01-06 13:36:13"
+  "timestamp": "2026-01-06 20:35:03"
 }

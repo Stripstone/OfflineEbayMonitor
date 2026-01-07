@@ -1,0 +1,6 @@
+SPRINT WORKFLOW (USAGE OPTIMIZED):
+When starting a sprint, user copies the relevant section from Master Sprint Plan v2.0 and uploads to project files as Sprint_XX_Plan.md. 
+PM (Chat B) provides: (1) file list with paths, (2) handoff messages for Chat C and Chat D, (3) 1-3 test scenarios. 
+User adds required files to project directory, sends handoff messages to chats, runs code locally to execute tests, 
+and reports results to Chat D. Sprint Plans use Master Plan sections verbatim with minimal template additions (file lists, deliverables) 
+to minimize token cost (~700 tokens vs 3K). No explanations, reports, or rewrites—just files, tests, and PASS/FAIL verdicts.

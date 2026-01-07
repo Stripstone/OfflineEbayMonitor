@@ -350,3 +350,75 @@ def report_field_presence(html_texts: Sequence[str]) -> Dict[str, int]:
 
 
 #EndOfFile
+
+
+# -------------------------
+# Coin metadata extraction (Sprint 05.6)
+# -------------------------
+
+_COIN_SERIES_PATTERNS = (
+    ("Morgan Dollar", re.compile(r"\bmorgan\b.*\bdollar\b", re.IGNORECASE)),
+    ("Peace Dollar", re.compile(r"\bpeace\b.*\bdollar\b", re.IGNORECASE)),
+    ("Kennedy Half", re.compile(r"\bkennedy\b.*(?:half|50)", re.IGNORECASE)),
+    ("Walking Liberty Half", re.compile(r"\bwalking\s+liberty\b.*(?:half|50)", re.IGNORECASE)),
+    ("Franklin Half", re.compile(r"\bfranklin\b.*(?:half|50)", re.IGNORECASE)),
+    ("Barber Half", re.compile(r"\bbarber\b.*(?:half|50)", re.IGNORECASE)),
+    ("Seated Liberty Half", re.compile(r"\bseated\b.*(?:half|50)", re.IGNORECASE)),
+)
+
+_YEAR_PATTERN = re.compile(r"\b(1[7-9]\d{2}|20\d{2})\b")
+_MINT_PATTERN = re.compile(r"\b([PDSOC]{1,2})\b")
+
+
+def extract_coin_metadata(title: str) -> dict:
+    """
+    Extract normalized coin metadata from title.
+    
+    Returns:
+        {
+            "series": str,  # e.g., "Morgan Dollar"
+            "year": str,    # e.g., "1881"
+            "mint": str     # e.g., "CC" or ""
+        }
+    
+    Sprint 05.6: Key normalization for price_store
+    Contract: v1.3.1 Clarification Issue #5
+    """
+    metadata = {
+        "series": "",
+        "year": "",
+        "mint": ""
+    }
+    
+    if not title:
+        return metadata
+    
+    # Extract series
+    for series_name, pattern in _COIN_SERIES_PATTERNS:
+        if pattern.search(title):
+            metadata["series"] = series_name
+            break
+    
+    # Extract year
+    year_match = _YEAR_PATTERN.search(title)
+    if year_match:
+        metadata["year"] = year_match.group(1)
+    
+    # Extract mint mark (after year if possible)
+    if metadata["year"]:
+        # Search after year position
+        year_pos = title.find(metadata["year"])
+        after_year = title[year_pos + 4:] if year_pos != -1 else title
+        mint_match = _MINT_PATTERN.search(after_year)
+        if mint_match:
+            metadata["mint"] = mint_match.group(1).upper()
+    else:
+        # Search entire title
+        mint_match = _MINT_PATTERN.search(title)
+        if mint_match:
+            metadata["mint"] = mint_match.group(1).upper()
+    
+    return metadata
+
+
+#EndOfFile

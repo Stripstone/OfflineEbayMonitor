@@ -1,0 +1,50 @@
+{
+  "total_listings_seen": 62,
+  "eligible_count": 61,
+  "hit_count": 0,
+  "miss_count": 55,
+  "ineligible_count": 6,
+  "pros_count": 0,
+  "rejection_buckets": {
+    "missing_price": 1,
+    "insufficient_margin": 55,
+    "blocked_terms": 5
+  },
+  "samples_by_reason": {
+    "missing_price": [
+      {
+        "title": "Shop on eBay",
+        "reason_detail": "No valid total_price"
+      }
+    ],
+    "insufficient_margin": [
+      {
+        "title": "2021-O Privy PCGS MS69 Morgan Silver $1 Dollar Coin New Orleans Opens in a new window or tab",
+        "reason_detail": "Margin -85.5% < 15.0% threshold"
+      },
+      {
+        "title": "1885 O MORGAN SILVER DOLLAR! BEAUTIFUL UNC COIN! WOW! #4 Opens in a new window or tab",
+        "reason_detail": "Margin -68.6% < 15.0% threshold"
+      },
+      {
+        "title": "1883 S MORGAN DOLLAR! FANTASTIC QUALITY! ULTRA RARE DATE! INCREDIBLE! NR #K2815 Opens in a new window or tab",
+        "reason_detail": "Margin -78.3% < 15.0% threshold"
+      }
+    ],
+    "blocked_terms": [
+      {
+        "title": "1892-1921 Morgan Silver Dollar Set Of 9 In Whitman Album 1893-O INCLUDED Opens in a new window or tab",
+        "reason_detail": "Contains blocked term: set"
+      },
+      {
+        "title": "Lot of 7-1891 $1 Morgan Silver Dollars in coin capsules Philadelphia Mint & 1 NO Opens in a new window or tab",
+        "reason_detail": "Contains blocked term: lot"
+      },
+      {
+        "title": "1883-O Morgan Silver Dollar, Beautiful End Of Roll Rainbow Toner, Gem BU++ Opens in a new window or tab",
+        "reason_detail": "Contains blocked term: roll"
+      }
+    ]
+  },
+  "timestamp": "2026-01-06 20:36:42"
+}
